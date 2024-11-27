@@ -4,6 +4,7 @@ AliyunTrafficMonitor 是一个用于监控服务器网络流量的 Shell 脚本�
 
 根据阿里云官方规则，CDT每月的免费的出站流量为200G，其中20G可用于国内。入站流量不限制。
 
+本项目由[aliyun_traffic.sh](https://github.com/csznet/public-script)分叉而来，修复了流量统计不太准的问题，并且使用了[tg代理](https://github.com/Pleiadem/tg_proxy)，让国内服务器可以发送tg机器人信息。
 
 ## 功能
 
