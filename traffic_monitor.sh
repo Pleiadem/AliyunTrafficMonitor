@@ -74,23 +74,31 @@ format_bytes() {
 monthly_in_formatted=$(format_bytes $monthly_in)
 monthly_out_formatted=$(format_bytes $monthly_out)
 
+# 获取服务器信息
+USER_HOSTNAME="$(whoami)@$(hostname)"
+PUBLIC_IP="$(curl -s ifconfig.me)"  # 请确认外部连接的URL，以获取公网IP
+
 # 通知逻辑和关机
 send_telegram_message() {
     local message="$1"
     curl -s -X POST "$TELEGRAM_URL" -H "Content-Type: application/json" -d "{\"message\":\"$message\"}"
 }
 
+# 为每个通知添加服务器信息
+SERVER_INFO="服务器: $USER_HOSTNAME ($PUBLIC_IP)"
+
 if [ "$monthly_out" -ge "$SHUTDOWN_THRESHOLD" ]; then
-    TELEGRAM_MSG="总出站流量已达到19GB, 系统即将关机...\n入站流量: $monthly_in_formatted\n出站流量: $monthly_out_formatted"
+    TELEGRAM_MSG="$SERVER_INFO\n总出站流量已达到19GB, 系统即将关机...\n入站流量: $monthly_in_formatted\n出站流量: $monthly_out_formatted"
     send_telegram_message "$TELEGRAM_MSG"
     sudo shutdown -h now
 elif [ "$monthly_out" -ge "$WARN_THRESHOLD_18GB" ]; then
-    TELEGRAM_MSG="警告: 总出站流量已达到18GB\n入站流量: $monthly_in_formatted\n出站流量: $monthly_out_formatted"
+    TELEGRAM_MSG="$SERVER_INFO\n警告: 总出站流量已达到18GB\n入站流量: $monthly_in_formatted\n出站流量: $monthly_out_formatted"
     send_telegram_message "$TELEGRAM_MSG"
 elif [ "$monthly_out" -ge "$WARN_THRESHOLD_15GB" ]; then
-    TELEGRAM_MSG="注意: 总出站流量已达到15GB\n入站流量: $monthly_in_formatted\n出站流量: $monthly_out_formatted"
+    TELEGRAM_MSG="$SERVER_INFO\n注意: 总出站流量已达到15GB\n入站流量: $monthly_in_formatted\n出站流量: $monthly_out_formatted"
     send_telegram_message "$TELEGRAM_MSG"
 fi
+
 
 # 输出流量信息
 echo "本月入站流量: $monthly_in_formatted"
