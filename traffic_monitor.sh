@@ -87,22 +87,28 @@ send_telegram_message() {
 # 为每个通知添加服务器信息
 SERVER_INFO="服务器: $USER_HOSTNAME ($PUBLIC_IP)"
 
+# 获取当前时间和日期
+CURRENT_DATETIME=$(date +"%Y-%m-%d %H:%M:%S")
+
 if [ "$monthly_out" -ge "$SHUTDOWN_THRESHOLD" ]; then
-    TELEGRAM_MSG="$SERVER_INFO\n总出站流量已达到19GB, 系统即将关机...\n入站流量: $monthly_in_formatted\n出站流量: $monthly_out_formatted"
+    TELEGRAM_MSG="$SERVER_INFO\n总出站流量已达到19GB, 系统即将关机...\n入站流量: $monthly_in_formatted\n出站流量: $monthly_out_formatted\n时间: $CURRENT_DATETIME"
     send_telegram_message "$TELEGRAM_MSG"
     sudo shutdown -h now
 elif [ "$monthly_out" -ge "$WARN_THRESHOLD_18GB" ]; then
-    TELEGRAM_MSG="$SERVER_INFO\n警告: 总出站流量已达到18GB\n入站流量: $monthly_in_formatted\n出站流量: $monthly_out_formatted"
+    TELEGRAM_MSG="$SERVER_INFO\n警告: 总出站流量已达到18GB\n入站流量: $monthly_in_formatted\n出站流量: $monthly_out_formatted\n时间: $CURRENT_DATETIME"
     send_telegram_message "$TELEGRAM_MSG"
 elif [ "$monthly_out" -ge "$WARN_THRESHOLD_15GB" ]; then
-    TELEGRAM_MSG="$SERVER_INFO\n注意: 总出站流量已达到15GB\n入站流量: $monthly_in_formatted\n出站流量: $monthly_out_formatted"
+    TELEGRAM_MSG="$SERVER_INFO\n注意: 总出站流量已达到15GB\n入站流量: $monthly_in_formatted\n出站流量: $monthly_out_formatted\n时间: $CURRENT_DATETIME"
     send_telegram_message "$TELEGRAM_MSG"
 fi
 
 
-# 输出流量信息
+echo "------------------------------"
+# 输出流量信息和当前时间日期
+
 echo "本月入站流量: $monthly_in_formatted"
 echo "本月出站流量: $monthly_out_formatted"
+echo "当前时间: $CURRENT_DATETIME"
 
 # 更新流量数据文件
 echo "$CURRENT_MONTH $saved_initial_in $saved_initial_out $current_total_in $current_total_out $monthly_in $monthly_out" > $TRAFFIC_FILE
